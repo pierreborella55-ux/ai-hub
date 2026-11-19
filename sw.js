@@ -1,4 +1,4 @@
-const CACHE = 'ai-hub-v1';
+const CACHE = 'ai-hub-v2';
 
 self.addEventListener('install', e => {
     e.waitUntil(

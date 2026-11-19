@@ -3,251 +3,641 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI Hub - Pierre Borella</title>
+    <title>AI Hub — Pierre Borella</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
-        .header h1 { font-size: 24px; margin-bottom: 5px; }
-        .header p { opacity: 0.8; font-size: 14px; }
-        .search-bar { background: white; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .search-bar input { width: 100%; padding: 12px 16px; border: 2px solid #e1e4e8; border-radius: 8px; font-size: 16px; outline: none; }
-        .search-bar input:focus { border-color: #667eea; }
-        .filters { display: flex; gap: 8px; padding: 15px 20px; overflow-x: auto; background: white; border-top: 1px solid #e1e4e8; }
-        .filter-btn { padding: 6px 14px; border: 2px solid #e1e4e8; border-radius: 20px; background: white; cursor: pointer; font-size: 13px; white-space: nowrap; }
-        .filter-btn.active { background: #667eea; color: white; border-color: #667eea; }
-        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
-        .btn-add { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; margin-bottom: 20px; }
-        .conversation-card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid #667eea; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
-        .card-title { font-weight: 600; font-size: 16px; }
-        .card-source { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-        .source-librechat { background: #dcfce7; color: #16a34a; }
-        .source-copilot { background: #dbeafe; color: #2563eb; }
-        .source-gemini { background: #fef9c3; color: #ca8a04; }
-        .source-chatgpt { background: #fee2e2; color: #dc2626; }
-        .card-content { color: #666; font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
-        .card-date { color: #999; font-size: 12px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #333; min-height: 100vh; }
+
+        /* HEADER */
+        .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px 20px 15px; text-align: center; }
+        .header h1 { font-size: 2em; margin-bottom: 4px; }
+        .header p { opacity: 0.8; font-size: 0.9em; }
+
+        /* DEVICE BAR */
+        .device-bar { background: white; padding: 10px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e8e8e8; flex-wrap: wrap; }
+        .device-bar-label { font-size: 0.82em; color: #888; font-weight: 600; }
+        .device-btn { padding: 6px 16px; border: 2px solid #667eea; background: white; color: #667eea; border-radius: 20px; cursor: pointer; font-size: 0.82em; font-weight: 700; transition: all 0.2s; }
+        .device-btn:hover { background: #667eea; color: white; }
+
+        /* CONTAINER */
+        .container { max-width: 920px; margin: 0 auto; padding: 20px; }
+
+        /* SEARCH */
+        .search-wrap { background: white; border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+        .search-input { width: 100%; padding: 10px 14px 10px 42px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95em; outline: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23aaa' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.116-.099zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 14px center; transition: border-color 0.2s; }
+        .search-input:focus { border-color: #667eea; }
+        .search-count { font-size: 0.8em; color: #888; margin-top: 8px; display: none; }
+
+        /* FILTERS */
+        .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+        .filter-btn { display: flex; align-items: center; gap: 6px; padding: 7px 16px; border: 2px solid #e0e0e0; background: white; border-radius: 20px; cursor: pointer; font-size: 0.83em; font-weight: 600; transition: all 0.2s; }
+        .filter-btn.active { background: #667eea; border-color: #667eea; color: white; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot-librechat { background: #22c55e; }
+        .dot-copilot { background: #3b82f6; }
+        .dot-gemini { background: #f59e0b; }
+        .dot-chatgpt { background: #f97316; }
+
+        /* STATS */
+        .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px; }
+        .stat-card { background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+        .stat-num { font-size: 2.2em; font-weight: 800; color: #667eea; }
+        .stat-lbl { font-size: 0.72em; color: #aaa; margin-top: 3px; }
+
+        /* ACTION BUTTONS */
+        .action-row { display: flex; gap: 12px; margin-bottom: 20px; }
+        .btn-primary { flex: 2; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 1em; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.88; }
+        .btn-secondary { flex: 1; padding: 14px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-secondary:hover { background: #667eea; color: white; }
+
+        /* CARDS */
+        .conv-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-left: 4px solid #667eea; transition: transform 0.15s, box-shadow 0.15s; }
+        .conv-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.11); }
+        .conv-card.cl-librechat { border-left-color: #22c55e; }
+        .conv-card.cl-copilot { border-left-color: #3b82f6; }
+        .conv-card.cl-gemini { border-left-color: #f59e0b; }
+        .conv-card.cl-chatgpt { border-left-color: #f97316; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .card-title { font-size: 1.08em; font-weight: 700; color: #222; }
+        .ai-badge { padding: 3px 12px; border-radius: 20px; font-size: 0.74em; font-weight: 700; white-space: nowrap; }
+        .ab-librechat { background: #dcfce7; color: #16a34a; }
+        .ab-copilot { background: #dbeafe; color: #1d4ed8; }
+        .ab-gemini { background: #fef3c7; color: #d97706; }
+        .ab-chatgpt { background: #ffedd5; color: #ea580c; }
+        .card-excerpt { font-size: 0.88em; color: #666; line-height: 1.55; margin-bottom: 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .tags { display: flex; gap: 5px; flex-wrap: wrap; }
+        .tag { background: #f0f2f5; padding: 2px 9px; border-radius: 10px; font-size: 0.74em; color: #555; }
+        .card-date { font-size: 0.74em; color: #bbb; }
         .card-actions { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-view, .btn-delete { padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: none; }
-        .btn-view { background: #f3f4f6; color: #374151; }
-        .btn-delete { background: #fee2e2; color: #dc2626; }
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; }
-        .modal.active { display: flex; align-items: flex-end; }
-        @media (min-width: 600px) { .modal.active { align-items: center; justify-content: center; } }
-        .modal-content { background: white; border-radius: 16px 16px 0 0; padding: 24px; width: 100%; max-height: 90vh; overflow-y: auto; }
-        @media (min-width: 600px) { .modal-content { border-radius: 16px; max-width: 600px; } }
-        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 14px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 2px solid #e1e4e8; border-radius: 8px; font-size: 14px; outline: none; font-family: inherit; }
-        .form-group textarea { height: 150px; resize: vertical; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #667eea; }
-        .modal-buttons { display: flex; gap: 10px; }
-        .btn-save { flex: 1; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
-        .btn-cancel { flex: 1; padding: 12px; background: #f3f4f6; color: #374151; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
-        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
-        .empty-state .emoji { font-size: 48px; margin-bottom: 12px; }
-        .view-content { white-space: pre-wrap; line-height: 1.6; color: #374151; font-size: 14px; }
-        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        @media (min-width: 500px) { .stats { grid-template-columns: repeat(4, 1fr); } }
-        .stat-card { background: white; border-radius: 10px; padding: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .stat-number { font-size: 24px; font-weight: 700; color: #667eea; }
-        .stat-label { font-size: 11px; color: #999; margin-top: 2px; }
+        .btn-view { padding: 5px 14px; background: #667eea; color: white; border: none; border-radius: 7px; font-size: 0.8em; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        .btn-view:hover { opacity: 0.85; }
+        .btn-del { padding: 5px 14px; background: #fff0f0; color: #e53e3e; border: none; border-radius: 7px; font-size: 0.8em; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-del:hover { background: #e53e3e; color: white; }
+
+        /* HIGHLIGHT */
+        mark.hl { background: #fff176; border-radius: 2px; padding: 0 2px; color: #333; font-style: normal; }
+
+        /* EMPTY STATE */
+        .empty { text-align: center; padding: 60px 20px; color: #ccc; }
+        .empty .icon { font-size: 4em; margin-bottom: 14px; }
+
+        /* MODAL */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto; align-items: flex-start; justify-content: center; padding: 20px; }
+        .overlay.on { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 580px; margin: auto; }
+        .modal-title { font-size: 1.25em; font-weight: 800; margin-bottom: 20px; }
+        .fgroup { margin-bottom: 15px; }
+        .fgroup label { display: block; font-weight: 600; font-size: 0.88em; color: #444; margin-bottom: 5px; }
+        .fgroup input, .fgroup select, .fgroup textarea { width: 100%; padding: 10px 13px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.93em; outline: none; font-family: inherit; transition: border-color 0.2s; }
+        .fgroup input:focus, .fgroup select:focus, .fgroup textarea:focus { border-color: #667eea; }
+        .fgroup textarea { height: 150px; resize: vertical; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+        .btn-cancel { flex: 1; padding: 12px; background: #f0f2f5; color: #555; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; }
+        .btn-save { flex: 2; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 700; cursor: pointer; }
+
+        /* TABS */
+        .tabs { display: flex; border-bottom: 2px solid #e8e8e8; margin-bottom: 18px; }
+        .tab { padding: 9px 18px; cursor: pointer; font-weight: 600; font-size: 0.87em; color: #aaa; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; user-select: none; }
+        .tab.on { color: #667eea; border-bottom-color: #667eea; }
+        .tab-panel { display: none; }
+        .tab-panel.on { display: block; }
+
+        /* DROP ZONE */
+        .drop-zone { border: 2px dashed #d0d0d0; border-radius: 12px; padding: 36px; text-align: center; cursor: pointer; transition: all 0.2s; color: #aaa; }
+        .drop-zone:hover, .drop-zone.over { border-color: #667eea; background: #f5f3ff; color: #667eea; }
+        .drop-zone .dicon { font-size: 2.5em; margin-bottom: 8px; }
+
+        /* DEVICE LINKS */
+        .ai-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; }
+        .ai-link { display: block; padding: 15px; border-radius: 10px; border: 2px solid #e0e0e0; text-align: center; font-weight: 700; font-size: 0.9em; color: #333; text-decoration: none; transition: all 0.2s; background: white; }
+        .ai-link:hover { border-color: #667eea; background: #f5f3ff; color: #667eea; }
+        .custom-url-box { background: #f8f8f8; border-radius: 8px; padding: 12px; margin-top: 5px; }
+        .custom-url-box p { font-size: 0.8em; color: #888; margin-bottom: 6px; }
+        .custom-url-box input { width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.88em; outline: none; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 10px; color: white; font-size: 0.9em; font-weight: 600; z-index: 9999; opacity: 0; transform: translateY(16px); transition: all 0.3s; pointer-events: none; }
+        .toast.on { opacity: 1; transform: translateY(0); }
+        .toast.ok { background: #22c55e; }
+        .toast.err { background: #e53e3e; }
+        .toast.info { background: #667eea; }
+
+        /* RESPONSIVE */
+        @media (max-width: 580px) {
+            .stats { grid-template-columns: repeat(2,1fr); }
+            .action-row { flex-direction: column; }
+            .ai-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
     <h1>🤖 AI Hub</h1>
     <p>Toutes mes conversations IA en un seul endroit</p>
 </div>
 
-<div class="search-bar">
-    <input type="text" id="searchInput" placeholder="🔍 Rechercher dans toutes mes conversations..." oninput="filterConversations()">
-    <div class="filters">
-        <button class="filter-btn active" onclick="setFilter('all', this)">Toutes</button>
-        <button class="filter-btn" onclick="setFilter('LibreChat', this)">🟢 LibreChat</button>
-        <button class="filter-btn" onclick="setFilter('Copilot', this)">🔵 Copilot</button>
-        <button class="filter-btn" onclick="setFilter('Gemini', this)">🟡 Gemini</button>
-        <button class="filter-btn" onclick="setFilter('ChatGPT', this)">🟠 ChatGPT</button>
-    </div>
+<!-- BARRE RACCOURCIS -->
+<div class="device-bar">
+    <span class="device-bar-label">⚡ Ouvrir une IA :</span>
+    <button class="device-btn" onclick="openDevice('pro')">💼 PC Pro</button>
+    <button class="device-btn" onclick="openDevice('perso')">🏠 PC Perso</button>
+    <button class="device-btn" onclick="openDevice('tel')">📱 Téléphone</button>
 </div>
 
+<!-- CONTENU PRINCIPAL -->
 <div class="container">
+
+    <!-- Recherche -->
+    <div class="search-wrap">
+        <input type="text" class="search-input" id="searchInput"
+               placeholder="Rechercher par mot-clé dans toutes mes conversations..."
+               oninput="doSearch()">
+        <div class="search-count" id="searchCount"></div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="filters">
+        <button class="filter-btn active" onclick="setFilter('all',this)">Toutes</button>
+        <button class="filter-btn" onclick="setFilter('LibreChat',this)"><span class="dot dot-librechat"></span>LibreChat</button>
+        <button class="filter-btn" onclick="setFilter('Copilot',this)"><span class="dot dot-copilot"></span>Copilot</button>
+        <button class="filter-btn" onclick="setFilter('Gemini',this)"><span class="dot dot-gemini"></span>Gemini</button>
+        <button class="filter-btn" onclick="setFilter('ChatGPT',this)"><span class="dot dot-chatgpt"></span>ChatGPT</button>
+    </div>
+
+    <!-- Stats -->
     <div class="stats">
-        <div class="stat-card"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Total</div></div>
-        <div class="stat-card"><div class="stat-number" id="librechatCount">0</div><div class="stat-label">LibreChat</div></div>
-        <div class="stat-card"><div class="stat-number" id="geminiCount">0</div><div class="stat-label">Gemini</div></div>
-        <div class="stat-card"><div class="stat-number" id="chatgptCount">0</div><div class="stat-label">ChatGPT</div></div>
+        <div class="stat-card"><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-card"><div class="stat-num" id="sLibreChat">0</div><div class="stat-lbl">LibreChat</div></div>
+        <div class="stat-card"><div class="stat-num" id="sGemini">0</div><div class="stat-lbl">Gemini</div></div>
+        <div class="stat-card"><div class="stat-num" id="sChatGPT">0</div><div class="stat-lbl">ChatGPT</div></div>
     </div>
-    <button class="btn-add" onclick="openAddModal()">➕ Ajouter une conversation</button>
-    <div id="conversationsList"></div>
+
+    <!-- Boutons -->
+    <div class="action-row">
+        <button class="btn-primary" onclick="openModal('addModal')">➕ Ajouter une conversation</button>
+        <button class="btn-secondary" onclick="openModal('importModal')">📥 Importer</button>
+    </div>
+
+    <!-- Liste -->
+    <div id="list"></div>
+
 </div>
 
-<div class="modal" id="addModal">
-    <div class="modal-content">
-        <div class="modal-title">📝 Nouvelle conversation</div>
-        <div class="form-group">
-            <label>Titre de la conversation *</label>
-            <input type="text" id="convTitle" placeholder="Ex: Analyse d'un contrat fournisseur">
-        </div>
-        <div class="form-group">
-            <label>Source IA *</label>
-            <select id="convSource">
-                <option value="LibreChat">🟢 LibreChat</option>
-                <option value="Copilot">🔵 Copilot</option>
-                <option value="Gemini">🟡 Gemini</option>
-                <option value="ChatGPT">🟠 ChatGPT</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Contenu de la conversation *</label>
-            <textarea id="convContent" placeholder="Collez ici le contenu de votre conversation..."></textarea>
-        </div>
-        <div class="form-group">
-            <label>Tags (optionnel)</label>
-            <input type="text" id="convTags" placeholder="Ex: contrat, juridique, fournisseur">
-        </div>
-        <div class="modal-buttons">
-            <button class="btn-cancel" onclick="closeAddModal()">Annuler</button>
-            <button class="btn-save" onclick="saveConversation()">💾 Sauvegarder</button>
-        </div>
+<!-- ===== MODAL : AJOUTER ===== -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">📝 Nouvelle conversation</div>
+    <div class="fgroup">
+      <label>Titre *</label>
+      <input id="aTitle" placeholder="Ex : Comment optimiser mon code Python ?">
     </div>
+    <div class="fgroup">
+      <label>Source IA *</label>
+      <select id="aSource">
+        <option value="ChatGPT">🟠 ChatGPT</option>
+        <option value="LibreChat">🟢 LibreChat</option>
+        <option value="Copilot">🔵 Copilot</option>
+        <option value="Gemini">🟡 Gemini</option>
+      </select>
+    </div>
+    <div class="fgroup">
+      <label>Contenu *</label>
+      <textarea id="aContent" placeholder="Collez ici le contenu de votre conversation..."></textarea>
+    </div>
+    <div class="fgroup">
+      <label>Tags (optionnel, séparés par des virgules)</label>
+      <input id="aTags" placeholder="Ex : code, python, optimisation">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('addModal')">Annuler</button>
+      <button class="btn-save" onclick="saveNew()">💾 Sauvegarder</button>
+    </div>
+  </div>
 </div>
 
-<div class="modal" id="viewModal">
-    <div class="modal-content">
-        <div class="modal-title" id="viewTitle"></div>
-        <div style="margin-bottom: 15px;">
-            <span class="card-source" id="viewSource"></span>
-            <span style="color: #999; font-size: 12px; margin-left: 10px;" id="viewDate"></span>
-        </div>
-        <div class="view-content" id="viewContent"></div>
-        <br>
-        <button class="btn-cancel" style="width:100%" onclick="closeViewModal()">Fermer</button>
+<!-- ===== MODAL : IMPORTER ===== -->
+<div class="overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-title">📥 Importer des conversations</div>
+    <div class="tabs">
+      <div class="tab on" onclick="switchTab('paste',this)">✏️ Copier-Coller</div>
+      <div class="tab" onclick="switchTab('json',this)">📄 Fichier JSON (ChatGPT)</div>
     </div>
+
+    <!-- Onglet Coller -->
+    <div class="tab-panel on" id="tp-paste">
+      <div class="fgroup">
+        <label>Titre *</label>
+        <input id="pTitle" placeholder="Titre de la conversation">
+      </div>
+      <div class="fgroup">
+        <label>Source IA *</label>
+        <select id="pSource">
+          <option value="ChatGPT">🟠 ChatGPT</option>
+          <option value="LibreChat">🟢 LibreChat</option>
+          <option value="Copilot">🔵 Copilot</option>
+          <option value="Gemini">🟡 Gemini</option>
+        </select>
+      </div>
+      <div class="fgroup">
+        <label>Contenu (copiez-collez votre conversation)</label>
+        <textarea id="pContent" style="height:180px" placeholder="Collez ici..."></textarea>
+      </div>
+      <div class="fgroup">
+        <label>Tags</label>
+        <input id="pTags" placeholder="Ex : travail, idées">
+      </div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal('importModal')">Annuler</button>
+        <button class="btn-save" onclick="savePaste()">💾 Importer</button>
+      </div>
+    </div>
+
+    <!-- Onglet JSON -->
+    <div class="tab-panel" id="tp-json">
+      <div style="background:#f0f8ff;border-radius:8px;padding:12px;margin-bottom:14px;font-size:0.85em;color:#555;line-height:1.7;">
+        <strong>📌 Comment exporter depuis ChatGPT ?</strong><br>
+        ChatGPT → ⚙️ Paramètres → Contrôle des données<br>
+        → Exporter les données → Vous recevez un e-mail<br>
+        → Téléchargez le ZIP → Extrayez <strong>conversations.json</strong>
+      </div>
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('jsonFile').click()">
+        <div class="dicon">📁</div>
+        <p><strong>Cliquez ici ou glissez-déposez votre fichier</strong></p>
+        <p style="font-size:0.82em;margin-top:5px;color:#bbb">conversations.json (export ChatGPT)</p>
+      </div>
+      <input type="file" id="jsonFile" accept=".json" style="display:none" onchange="loadJSON(event)">
+      <div id="jsonInfo" style="display:none;margin-top:14px;padding:12px;background:#f0fdf4;border-radius:8px;">
+        <p style="color:#16a34a;font-weight:700;margin-bottom:6px;">✅ Fichier chargé !</p>
+        <p id="jsonInfoText" style="font-size:0.85em;color:#555;"></p>
+        <div class="fgroup" style="margin-top:10px;margin-bottom:0;">
+          <label>Source IA à attribuer</label>
+          <select id="jsonSource">
+            <option value="ChatGPT">🟠 ChatGPT</option>
+            <option value="LibreChat">🟢 LibreChat</option>
+            <option value="Copilot">🔵 Copilot</option>
+            <option value="Gemini">🟡 Gemini</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-btns" style="margin-top:16px;">
+        <button class="btn-cancel" onclick="closeModal('importModal')">Annuler</button>
+        <button class="btn-save" id="btnImportJSON" style="display:none" onclick="importJSON()">📥 Tout importer</button>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- ===== MODAL : VOIR ===== -->
+<div class="overlay" id="viewModal">
+  <div class="modal">
+    <div class="modal-title" id="vTitle"></div>
+    <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span class="ai-badge" id="vBadge"></span>
+      <span style="font-size:0.8em;color:#bbb;" id="vDate"></span>
+    </div>
+    <div id="vTags" style="margin-bottom:14px;display:flex;gap:5px;flex-wrap:wrap;"></div>
+    <div id="vContent" style="background:#f8f8f8;border-radius:10px;padding:16px;max-height:420px;overflow-y:auto;font-size:0.88em;line-height:1.7;white-space:pre-wrap;"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('viewModal')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL : RACCOURCIS ===== -->
+<div class="overlay" id="deviceModal">
+  <div class="modal">
+    <div class="modal-title">⚡ Ouvrir une IA</div>
+    <div class="tabs">
+      <div class="tab on" id="dtab-pro" onclick="switchDevTab('pro',this)">💼 PC Pro</div>
+      <div class="tab" id="dtab-perso" onclick="switchDevTab('perso',this)">🏠 PC Perso</div>
+      <div class="tab" id="dtab-tel" onclick="switchDevTab('tel',this)">📱 Téléphone</div>
+    </div>
+
+    <!-- PC Pro -->
+    <div class="tab-panel on" id="dp-pro">
+      <div class="ai-grid">
+        <a href="https://chatgpt.com" target="_blank" class="ai-link">🟠 ChatGPT</a>
+        <a href="https://copilot.microsoft.com" target="_blank" class="ai-link">🔵 Copilot</a>
+        <a href="https://gemini.google.com" target="_blank" class="ai-link">🟡 Gemini</a>
+        <a href="https://claude.ai" target="_blank" class="ai-link">🟣 Claude</a>
+      </div>
+      <div class="custom-url-box">
+        <p>🔧 URL de votre LibreChat Pro :</p>
+        <input id="urlPro" type="url" placeholder="https://librechat.votredomaine.com" oninput="saveURL('pro',this.value)">
+      </div>
+      <div id="lc-pro" style="display:none;margin-top:8px;">
+        <a id="a-pro" href="#" target="_blank" class="ai-link">🟢 LibreChat Pro</a>
+      </div>
+    </div>
+
+    <!-- PC Perso -->
+    <div class="tab-panel" id="dp-perso">
+      <div class="ai-grid">
+        <a href="https://chatgpt.com" target="_blank" class="ai-link">🟠 ChatGPT</a>
+        <a href="https://gemini.google.com" target="_blank" class="ai-link">🟡 Gemini</a>
+        <a href="https://claude.ai" target="_blank" class="ai-link">🟣 Claude</a>
+        <a href="https://www.perplexity.ai" target="_blank" class="ai-link">🔷 Perplexity</a>
+      </div>
+      <div class="custom-url-box">
+        <p>🔧 URL de votre LibreChat Perso :</p>
+        <input id="urlPerso" type="url" placeholder="https://librechat.votredomaine.com" oninput="saveURL('perso',this.value)">
+      </div>
+      <div id="lc-perso" style="display:none;margin-top:8px;">
+        <a id="a-perso" href="#" target="_blank" class="ai-link">🟢 LibreChat Perso</a>
+      </div>
+    </div>
+
+    <!-- Téléphone -->
+    <div class="tab-panel" id="dp-tel">
+      <div class="ai-grid">
+        <a href="https://chatgpt.com" target="_blank" class="ai-link">🟠 ChatGPT</a>
+        <a href="https://gemini.google.com" target="_blank" class="ai-link">🟡 Gemini</a>
+        <a href="https://claude.ai" target="_blank" class="ai-link">🟣 Claude</a>
+        <a href="https://copilot.microsoft.com" target="_blank" class="ai-link">🔵 Copilot</a>
+      </div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal('deviceModal')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
-    const SUPABASE_URL = 'https://pfmrkspktkvxjkfulxcz.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_RRoLaV-jPxUy_zppGXs-FQ_fMeojdp0';
+// ============================================
+// ⚠️ REMPLACEZ CES 2 VALEURS PAR LES VÔTRES
+// ============================================
+const SUPABASE_URL = 'https://pfmrkspktkvxjkfulxcz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_RRoLaV-jPxUy_zppGXs-FQ_fMeojdp0';
 
-    const { createClient } = supabase;
-    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let allConversations = [];
-    let currentFilter = 'all';
+// État
+let conversations = [];
+let activeFilter = 'all';
+let searchTerm = '';
+let jsonImportData = null;
 
-    window.onload = () => loadConversations();
+// Démarrage
+window.addEventListener('DOMContentLoaded', () => {
+    loadConvs();
+    loadSavedURLs();
+    initDrop();
+    document.querySelectorAll('.overlay').forEach(o => {
+        o.addEventListener('click', e => { if (e.target === o) o.classList.remove('on'); });
+    });
+});
 
-    async function loadConversations() {
-        const { data, error } = await db.from('conversations').select('*').order('created_at', { ascending: false });
-        if (error) { console.error('Erreur:', error); return; }
-        allConversations = data || [];
-        updateStats();
-        renderConversations(allConversations);
+// ---- CHARGEMENT ----
+async function loadConvs() {
+    const { data, error } = await db.from('conversations').select('*').order('created_at', { ascending: false });
+    if (error) return toast('Erreur : ' + error.message, 'err');
+    conversations = data || [];
+    updateStats();
+    render();
+}
+
+// ---- STATS ----
+function updateStats() {
+    document.getElementById('sTotal').textContent = conversations.length;
+    document.getElementById('sLibreChat').textContent = conversations.filter(c => c.ai_source === 'LibreChat').length;
+    document.getElementById('sGemini').textContent = conversations.filter(c => c.ai_source === 'Gemini').length;
+    document.getElementById('sChatGPT').textContent = conversations.filter(c => c.ai_source === 'ChatGPT').length;
+}
+
+// ---- RENDU ----
+function render() {
+    let list = conversations;
+    if (activeFilter !== 'all') list = list.filter(c => c.ai_source === activeFilter);
+    if (searchTerm) {
+        const q = searchTerm.toLowerCase();
+        list = list.filter(c =>
+            c.title.toLowerCase().includes(q) ||
+            c.content.toLowerCase().includes(q) ||
+            (c.tags && c.tags.toLowerCase().includes(q))
+        );
+        const sc = document.getElementById('searchCount');
+        sc.style.display = 'block';
+        sc.textContent = `🔍 ${list.length} résultat(s) pour "${searchTerm}"`;
+    } else {
+        document.getElementById('searchCount').style.display = 'none';
     }
-
-    function updateStats() {
-        document.getElementById('totalCount').textContent = allConversations.length;
-        document.getElementById('librechatCount').textContent = allConversations.filter(c => c.ai_source === 'LibreChat').length;
-        document.getElementById('geminiCount').textContent = allConversations.filter(c => c.ai_source === 'Gemini').length;
-        document.getElementById('chatgptCount').textContent = allConversations.filter(c => c.ai_source === 'ChatGPT').length;
+    const el = document.getElementById('list');
+    if (!list.length) {
+        el.innerHTML = `<div class="empty"><div class="icon">${searchTerm ? '🔍' : '💬'}</div>
+        <p><strong>${searchTerm ? 'Aucun résultat' : 'Aucune conversation'}</strong></p>
+        <p style="margin-top:8px;font-size:0.88em;color:#bbb">
+        ${searchTerm ? 'Essayez d\'autres mots-clés' : 'Cliquez sur Ajouter pour commencer !'}</p></div>`;
+        return;
     }
+    el.innerHTML = list.map(c => cardHTML(c)).join('');
+}
 
-    function renderConversations(conversations) {
-        const container = document.getElementById('conversationsList');
-        if (conversations.length === 0) {
-            container.innerHTML = '<div class="empty-state"><div class="emoji">💬</div><p>Aucune conversation trouvée</p><p style="margin-top:8px;font-size:13px">Ajoutez votre première conversation !</p></div>';
-            return;
-        }
-        container.innerHTML = conversations.map(conv => `
-            <div class="conversation-card">
-                <div class="card-header">
-                    <div class="card-title">${escapeHtml(conv.title)}</div>
-                    <span class="card-source source-${conv.ai_source.toLowerCase()}">${getEmoji(conv.ai_source)} ${conv.ai_source}</span>
-                </div>
-                <div class="card-content">${escapeHtml(conv.content.substring(0, 150))}${conv.content.length > 150 ? '...' : ''}</div>
-                ${conv.tags ? `<div style="margin-bottom:8px">${conv.tags.split(',').map(t => `<span style="background:#f3f4f6;padding:2px 8px;border-radius:10px;font-size:11px;margin-right:4px">${t.trim()}</span>`).join('')}</div>` : ''}
-                <div class="card-date">📅 ${formatDate(conv.created_at)}</div>
-                <div class="card-actions">
-                    <button class="btn-view" onclick="viewConversation('${conv.id}')">👁️ Voir</button>
-                    <button class="btn-delete" onclick="deleteConversation('${conv.id}')">🗑️ Supprimer</button>
-                </div>
-            </div>`).join('');
+function cardHTML(c) {
+    const cls = (c.ai_source || '').toLowerCase();
+    const short = c.content.length > 160 ? c.content.slice(0, 160) + '…' : c.content;
+    const disp = searchTerm ? hl(short, searchTerm) : short;
+    const titleDisp = searchTerm ? hl(c.title, searchTerm) : c.title;
+    const tags = c.tags ? c.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
+    const date = new Date(c.created_at).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<div class="conv-card cl-${cls}">
+      <div class="card-top"><div class="card-title">${titleDisp}</div><span class="ai-badge ab-${cls}">${c.ai_source}</span></div>
+      <div class="card-excerpt">${disp}</div>
+      <div class="card-footer"><div class="tags">${tags}</div><span class="card-date">📅 ${date}</span></div>
+      <div class="card-actions">
+        <button class="btn-view" onclick="viewConv('${c.id}')">👁️ Voir</button>
+        <button class="btn-del" onclick="delConv('${c.id}')">🗑️ Supprimer</button>
+      </div>
+    </div>`;
+}
+
+function hl(text, term) {
+    if (!term) return text;
+    return text.replace(new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<mark class="hl">$1</mark>');
+}
+
+// ---- RECHERCHE + FILTRE ----
+function doSearch() { searchTerm = document.getElementById('searchInput').value.trim(); render(); }
+function setFilter(f, btn) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+}
+
+// ---- AJOUTER ----
+async function saveNew() {
+    const title = document.getElementById('aTitle').value.trim();
+    const src = document.getElementById('aSource').value;
+    const content = document.getElementById('aContent').value.trim();
+    const tags = document.getElementById('aTags').value.trim();
+    if (!title || !content) return toast('⚠️ Titre et contenu requis !', 'err');
+    const { error } = await db.from('conversations').insert([{ title, ai_source: src, content, tags }]);
+    if (error) return toast('Erreur : ' + error.message, 'err');
+    closeModal('addModal');
+    ['aTitle','aContent','aTags'].forEach(id => document.getElementById(id).value = '');
+    toast('✅ Conversation sauvegardée !', 'ok');
+    loadConvs();
+}
+
+// ---- VOIR ----
+function viewConv(id) {
+    const c = conversations.find(x => x.id === id);
+    if (!c) return;
+    const cls = (c.ai_source || '').toLowerCase();
+    document.getElementById('vTitle').textContent = c.title;
+    document.getElementById('vBadge').textContent = c.ai_source;
+    document.getElementById('vBadge').className = `ai-badge ab-${cls}`;
+    document.getElementById('vDate').textContent = new Date(c.created_at).toLocaleString('fr-FR');
+    const tagsEl = document.getElementById('vTags');
+    tagsEl.innerHTML = c.tags ? c.tags.split(',').map(t => `<span class="tag">${t.trim()}</span>`).join('') : '';
+    document.getElementById('vContent').innerHTML = searchTerm ? hl(c.content, searchTerm) : c.content;
+    openModal('viewModal');
+}
+
+// ---- SUPPRIMER ----
+async function delConv(id) {
+    if (!confirm('Supprimer cette conversation ?')) return;
+    const { error } = await db.from('conversations').delete().eq('id', id);
+    if (error) return toast('Erreur : ' + error.message, 'err');
+    toast('🗑️ Supprimée', 'ok');
+    loadConvs();
+}
+
+// ---- IMPORT COLLER ----
+async function savePaste() {
+    const title = document.getElementById('pTitle').value.trim();
+    const src = document.getElementById('pSource').value;
+    const content = document.getElementById('pContent').value.trim();
+    const tags = document.getElementById('pTags').value.trim();
+    if (!title || !content) return toast('⚠️ Titre et contenu requis !', 'err');
+    const { error } = await db.from('conversations').insert([{ title, ai_source: src, content, tags }]);
+    if (error) return toast('Erreur : ' + error.message, 'err');
+    closeModal('importModal');
+    ['pTitle','pContent','pTags'].forEach(id => document.getElementById(id).value = '');
+    toast('✅ Conversation importée !', 'ok');
+    loadConvs();
+}
+
+// ---- IMPORT JSON ----
+function initDrop() {
+    const dz = document.getElementById('dropZone');
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+}
+function loadJSON(e) { if (e.target.files[0]) processFile(e.target.files[0]); }
+function processFile(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        try {
+            jsonImportData = JSON.parse(e.target.result);
+            const count = Array.isArray(jsonImportData) ? jsonImportData.length : 0;
+            document.getElementById('jsonInfo').style.display = 'block';
+            document.getElementById('jsonInfoText').textContent = `${count} conversation(s) trouvée(s)`;
+            document.getElementById('btnImportJSON').style.display = 'block';
+        } catch { toast('❌ Fichier JSON invalide', 'err'); }
+    };
+    reader.readAsText(file);
+}
+async function importJSON() {
+    if (!jsonImportData || !Array.isArray(jsonImportData)) return toast('❌ Pas de données', 'err');
+    const src = document.getElementById('jsonSource').value;
+    let ok = 0, fail = 0;
+    toast('⏳ Import en cours...', 'info');
+    for (const conv of jsonImportData) {
+        try {
+            const title = conv.title || 'Sans titre';
+            let content = '';
+            if (conv.mapping) {
+                content = Object.values(conv.mapping)
+                    .filter(n => n.message?.content?.parts?.length)
+                    .sort((a, b) => (a.message.create_time || 0) - (b.message.create_time || 0))
+                    .map(n => {
+                        const role = n.message.author?.role === 'user' ? '👤 Vous' : `🤖 ${src}`;
+                        const txt = n.message.content.parts.filter(p => typeof p === 'string').join(' ');
+                        return txt ? `${role}: ${txt}` : null;
+                    }).filter(Boolean).join('\n\n');
+            } else if (conv.messages) {
+                content = conv.messages.map(m => {
+                    const role = m.role === 'user' ? '👤 Vous' : `🤖 ${src}`;
+                    const txt = typeof m.content === 'string' ? m.content : JSON.stringify(m.content);
+                    return `${role}: ${txt}`;
+                }).join('\n\n');
+            }
+            if (title && content) {
+                const { error } = await db.from('conversations').insert([{ title, ai_source: src, content: content.slice(0, 10000), tags: 'importé-json' }]);
+                error ? fail++ : ok++;
+            } else { fail++; }
+        } catch { fail++; }
     }
+    closeModal('importModal');
+    jsonImportData = null;
+    toast(`✅ ${ok} importée(s)${fail ? ` — ${fail} ignorée(s)` : ''}`, 'ok');
+    loadConvs();
+}
 
-    function filterConversations() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        let filtered = allConversations;
-        if (currentFilter !== 'all') filtered = filtered.filter(c => c.ai_source === currentFilter);
-        if (search) filtered = filtered.filter(c => c.title.toLowerCase().includes(search) || c.content.toLowerCase().includes(search) || (c.tags && c.tags.toLowerCase().includes(search)));
-        renderConversations(filtered);
-    }
+// ---- RACCOURCIS APPAREILS ----
+function openDevice(dev) {
+    document.querySelectorAll('[id^="dtab-"]').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('[id^="dp-"]').forEach(p => p.classList.remove('on'));
+    document.getElementById('dtab-' + dev).classList.add('on');
+    document.getElementById('dp-' + dev).classList.add('on');
+    openModal('deviceModal');
+}
+function switchDevTab(dev, el) {
+    document.querySelectorAll('[id^="dtab-"]').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('[id^="dp-"]').forEach(p => p.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('dp-' + dev).classList.add('on');
+}
+function saveURL(dev, url) {
+    localStorage.setItem('lc_' + dev, url);
+    const linkDiv = document.getElementById('lc-' + dev);
+    const aEl = document.getElementById('a-' + dev);
+    if (url && linkDiv && aEl) { linkDiv.style.display = 'block'; aEl.href = url; }
+    else if (linkDiv) { linkDiv.style.display = 'none'; }
+}
+function loadSavedURLs() {
+    ['pro', 'perso'].forEach(dev => {
+        const url = localStorage.getItem('lc_' + dev) || '';
+        const key = dev === 'pro' ? 'urlPro' : 'urlPerso';
+        const inp = document.getElementById(key);
+        if (inp) inp.value = url;
+        if (url) saveURL(dev, url);
+    });
+}
 
-    function setFilter(filter, btn) {
-        currentFilter = filter;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        filterConversations();
-    }
+// ---- MODALS + TABS ----
+function openModal(id) { document.getElementById(id).classList.add('on'); }
+function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+function switchTab(name, el) {
+    const parent = el.closest('.modal');
+    parent.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+    parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+    el.classList.add('on');
+    document.getElementById('tp-' + name).classList.add('on');
+}
 
-    function openAddModal() { document.getElementById('addModal').classList.add('active'); }
-
-    function closeAddModal() {
-        document.getElementById('addModal').classList.remove('active');
-        document.getElementById('convTitle').value = '';
-        document.getElementById('convContent').value = '';
-        document.getElementById('convTags').value = '';
-    }
-
-    async function saveConversation() {
-        const title = document.getElementById('convTitle').value.trim();
-        const source = document.getElementById('convSource').value;
-        const content = document.getElementById('convContent').value.trim();
-        const tags = document.getElementById('convTags').value.trim();
-        if (!title || !content) { alert('Veuillez remplir le titre et le contenu !'); return; }
-        const { error } = await db.from('conversations').insert([{ title, ai_source: source, content, tags: tags || null }]);
-        if (error) { alert('Erreur : ' + error.message); return; }
-        closeAddModal();
-        loadConversations();
-    }
-
-    function viewConversation(id) {
-        const conv = allConversations.find(c => c.id === id);
-        if (!conv) return;
-        document.getElementById('viewTitle').textContent = conv.title;
-        document.getElementById('viewSource').textContent = getEmoji(conv.ai_source) + ' ' + conv.ai_source;
-        document.getElementById('viewSource').className = 'card-source source-' + conv.ai_source.toLowerCase();
-        document.getElementById('viewDate').textContent = formatDate(conv.created_at);
-        document.getElementById('viewContent').textContent = conv.content;
-        document.getElementById('viewModal').classList.add('active');
-    }
-
-    function closeViewModal() { document.getElementById('viewModal').classList.remove('active'); }
-
-    async function deleteConversation(id) {
-        if (!confirm('Supprimer cette conversation ?')) return;
-        const { error } = await db.from('conversations').delete().eq('id', id);
-        if (error) { alert('Erreur lors de la suppression'); return; }
-        loadConversations();
-    }
-
-    function getEmoji(source) {
-        return { LibreChat: '🟢', Copilot: '🔵', Gemini: '🟡', ChatGPT: '🟠' }[source] || '🤖';
-    }
-
-    function formatDate(dateStr) {
-        return new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    }
-
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.appendChild(document.createTextNode(text));
-        return div.innerHTML;
-    }
+// ---- TOAST ----
+let toastTimer;
+function toast(msg, type = 'info') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast ${type} on`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('on'), 3500);
+}
 </script>
 </body>
 </html>

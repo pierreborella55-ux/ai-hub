@@ -357,6 +357,14 @@ let searchTerm = '';
 let jsonImportData = null;
 
 window.addEventListener('DOMContentLoaded', () => {
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    document.querySelectorAll('[id^="dtab-"]').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('[id^="dp-"]').forEach(p => p.classList.remove('on'));
+    document.getElementById('dtab-tel').classList.add('on');
+    document.getElementById('dp-tel').classList.add('on');
+    document.getElementById('dtab-pro').style.display = 'none';
+    document.getElementById('dtab-perso').style.display = 'none';
+}
     loadConvs();
     initDrop();
     document.querySelectorAll('.overlay').forEach(o => {

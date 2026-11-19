@@ -9,27 +9,22 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: #333; min-height: 100vh; }
 
-        /* HEADER */
         .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px 20px 15px; text-align: center; }
         .header h1 { font-size: 2em; margin-bottom: 4px; }
         .header p { opacity: 0.8; font-size: 0.9em; }
 
-        /* DEVICE BAR */
         .device-bar { background: white; padding: 10px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #e8e8e8; flex-wrap: wrap; }
         .device-bar-label { font-size: 0.82em; color: #888; font-weight: 600; }
         .device-btn { padding: 6px 16px; border: 2px solid #667eea; background: white; color: #667eea; border-radius: 20px; cursor: pointer; font-size: 0.82em; font-weight: 700; transition: all 0.2s; }
         .device-btn:hover { background: #667eea; color: white; }
 
-        /* CONTAINER */
         .container { max-width: 920px; margin: 0 auto; padding: 20px; }
 
-        /* SEARCH */
         .search-wrap { background: white; border-radius: 12px; padding: 14px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
         .search-input { width: 100%; padding: 10px 14px 10px 42px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 0.95em; outline: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23aaa' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.116-.099zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 14px center; transition: border-color 0.2s; }
         .search-input:focus { border-color: #667eea; }
         .search-count { font-size: 0.8em; color: #888; margin-top: 8px; display: none; }
 
-        /* FILTERS */
         .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
         .filter-btn { display: flex; align-items: center; gap: 6px; padding: 7px 16px; border: 2px solid #e0e0e0; background: white; border-radius: 20px; cursor: pointer; font-size: 0.83em; font-weight: 600; transition: all 0.2s; }
         .filter-btn.active { background: #667eea; border-color: #667eea; color: white; }
@@ -39,20 +34,17 @@
         .dot-gemini { background: #f59e0b; }
         .dot-chatgpt { background: #f97316; }
 
-        /* STATS */
         .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 18px; }
         .stat-card { background: white; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
         .stat-num { font-size: 2.2em; font-weight: 800; color: #667eea; }
         .stat-lbl { font-size: 0.72em; color: #aaa; margin-top: 3px; }
 
-        /* ACTION BUTTONS */
         .action-row { display: flex; gap: 12px; margin-bottom: 20px; }
         .btn-primary { flex: 2; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; font-size: 1em; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
         .btn-primary:hover { opacity: 0.88; }
         .btn-secondary { flex: 1; padding: 14px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 12px; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.2s; }
         .btn-secondary:hover { background: #667eea; color: white; }
 
-        /* CARDS */
         .conv-card { background: white; border-radius: 12px; padding: 18px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-left: 4px solid #667eea; transition: transform 0.15s, box-shadow 0.15s; }
         .conv-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.11); }
         .conv-card.cl-librechat { border-left-color: #22c55e; }
@@ -72,19 +64,16 @@
         .tag { background: #f0f2f5; padding: 2px 9px; border-radius: 10px; font-size: 0.74em; color: #555; }
         .card-date { font-size: 0.74em; color: #bbb; }
         .card-actions { display: flex; gap: 8px; margin-top: 10px; }
-        .btn-view { padding: 5px 14px; background: #667eea; color: white; border: none; border-radius: 7px; font-size: 0.8em; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        .btn-view { padding: 5px 14px; background: #667eea; color: white; border: none; border-radius: 7px; font-size: 0.8em; font-weight: 600; cursor: pointer; }
         .btn-view:hover { opacity: 0.85; }
-        .btn-del { padding: 5px 14px; background: #fff0f0; color: #e53e3e; border: none; border-radius: 7px; font-size: 0.8em; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-del { padding: 5px 14px; background: #fff0f0; color: #e53e3e; border: none; border-radius: 7px; font-size: 0.8em; font-weight: 600; cursor: pointer; }
         .btn-del:hover { background: #e53e3e; color: white; }
 
-        /* HIGHLIGHT */
-        mark.hl { background: #fff176; border-radius: 2px; padding: 0 2px; color: #333; font-style: normal; }
+        mark.hl { background: #fff176; border-radius: 2px; padding: 0 2px; color: #333; }
 
-        /* EMPTY STATE */
         .empty { text-align: center; padding: 60px 20px; color: #ccc; }
         .empty .icon { font-size: 4em; margin-bottom: 14px; }
 
-        /* MODAL */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto; align-items: flex-start; justify-content: center; padding: 20px; }
         .overlay.on { display: flex; }
         .modal { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 580px; margin: auto; }
@@ -98,34 +87,26 @@
         .btn-cancel { flex: 1; padding: 12px; background: #f0f2f5; color: #555; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; }
         .btn-save { flex: 2; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 700; cursor: pointer; }
 
-        /* TABS */
         .tabs { display: flex; border-bottom: 2px solid #e8e8e8; margin-bottom: 18px; }
         .tab { padding: 9px 18px; cursor: pointer; font-weight: 600; font-size: 0.87em; color: #aaa; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; user-select: none; }
         .tab.on { color: #667eea; border-bottom-color: #667eea; }
         .tab-panel { display: none; }
         .tab-panel.on { display: block; }
 
-        /* DROP ZONE */
         .drop-zone { border: 2px dashed #d0d0d0; border-radius: 12px; padding: 36px; text-align: center; cursor: pointer; transition: all 0.2s; color: #aaa; }
         .drop-zone:hover, .drop-zone.over { border-color: #667eea; background: #f5f3ff; color: #667eea; }
         .drop-zone .dicon { font-size: 2.5em; margin-bottom: 8px; }
 
-        /* DEVICE LINKS */
-        .ai-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; }
+        .ai-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 10px; }
         .ai-link { display: block; padding: 15px; border-radius: 10px; border: 2px solid #e0e0e0; text-align: center; font-weight: 700; font-size: 0.9em; color: #333; text-decoration: none; transition: all 0.2s; background: white; }
         .ai-link:hover { border-color: #667eea; background: #f5f3ff; color: #667eea; }
-        .custom-url-box { background: #f8f8f8; border-radius: 8px; padding: 12px; margin-top: 5px; }
-        .custom-url-box p { font-size: 0.8em; color: #888; margin-bottom: 6px; }
-        .custom-url-box input { width: 100%; padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.88em; outline: none; }
 
-        /* TOAST */
         .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 10px; color: white; font-size: 0.9em; font-weight: 600; z-index: 9999; opacity: 0; transform: translateY(16px); transition: all 0.3s; pointer-events: none; }
         .toast.on { opacity: 1; transform: translateY(0); }
         .toast.ok { background: #22c55e; }
         .toast.err { background: #e53e3e; }
         .toast.info { background: #667eea; }
 
-        /* RESPONSIVE */
         @media (max-width: 580px) {
             .stats { grid-template-columns: repeat(2,1fr); }
             .action-row { flex-direction: column; }
@@ -135,13 +116,11 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <h1>🤖 AI Hub</h1>
     <p>Toutes mes conversations IA en un seul endroit</p>
 </div>
 
-<!-- BARRE RACCOURCIS -->
 <div class="device-bar">
     <span class="device-bar-label">⚡ Ouvrir une IA :</span>
     <button class="device-btn" onclick="openDevice('pro')">💼 PC Pro</button>
@@ -149,10 +128,8 @@
     <button class="device-btn" onclick="openDevice('tel')">📱 Téléphone</button>
 </div>
 
-<!-- CONTENU PRINCIPAL -->
 <div class="container">
 
-    <!-- Recherche -->
     <div class="search-wrap">
         <input type="text" class="search-input" id="searchInput"
                placeholder="Rechercher par mot-clé dans toutes mes conversations..."
@@ -160,7 +137,6 @@
         <div class="search-count" id="searchCount"></div>
     </div>
 
-    <!-- Filtres -->
     <div class="filters">
         <button class="filter-btn active" onclick="setFilter('all',this)">Toutes</button>
         <button class="filter-btn" onclick="setFilter('LibreChat',this)"><span class="dot dot-librechat"></span>LibreChat</button>
@@ -169,7 +145,6 @@
         <button class="filter-btn" onclick="setFilter('ChatGPT',this)"><span class="dot dot-chatgpt"></span>ChatGPT</button>
     </div>
 
-    <!-- Stats -->
     <div class="stats">
         <div class="stat-card"><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">Total</div></div>
         <div class="stat-card"><div class="stat-num" id="sLibreChat">0</div><div class="stat-lbl">LibreChat</div></div>
@@ -177,18 +152,16 @@
         <div class="stat-card"><div class="stat-num" id="sChatGPT">0</div><div class="stat-lbl">ChatGPT</div></div>
     </div>
 
-    <!-- Boutons -->
     <div class="action-row">
         <button class="btn-primary" onclick="openModal('addModal')">➕ Ajouter une conversation</button>
         <button class="btn-secondary" onclick="openModal('importModal')">📥 Importer</button>
     </div>
 
-    <!-- Liste -->
     <div id="list"></div>
 
 </div>
 
-<!-- ===== MODAL : AJOUTER ===== -->
+<!-- MODAL AJOUTER -->
 <div class="overlay" id="addModal">
   <div class="modal">
     <div class="modal-title">📝 Nouvelle conversation</div>
@@ -220,7 +193,7 @@
   </div>
 </div>
 
-<!-- ===== MODAL : IMPORTER ===== -->
+<!-- MODAL IMPORTER -->
 <div class="overlay" id="importModal">
   <div class="modal">
     <div class="modal-title">📥 Importer des conversations</div>
@@ -229,7 +202,6 @@
       <div class="tab" onclick="switchTab('json',this)">📄 Fichier JSON (ChatGPT)</div>
     </div>
 
-    <!-- Onglet Coller -->
     <div class="tab-panel on" id="tp-paste">
       <div class="fgroup">
         <label>Titre *</label>
@@ -258,13 +230,12 @@
       </div>
     </div>
 
-    <!-- Onglet JSON -->
     <div class="tab-panel" id="tp-json">
       <div style="background:#f0f8ff;border-radius:8px;padding:12px;margin-bottom:14px;font-size:0.85em;color:#555;line-height:1.7;">
         <strong>📌 Comment exporter depuis ChatGPT ?</strong><br>
         ChatGPT → ⚙️ Paramètres → Contrôle des données<br>
-        → Exporter les données → Vous recevez un e-mail<br>
-        → Téléchargez le ZIP → Extrayez <strong>conversations.json</strong>
+        → Exporter les données → Téléchargez le ZIP<br>
+        → Extrayez <strong>conversations.json</strong>
       </div>
       <div class="drop-zone" id="dropZone" onclick="document.getElementById('jsonFile').click()">
         <div class="dicon">📁</div>
@@ -293,7 +264,7 @@
   </div>
 </div>
 
-<!-- ===== MODAL : VOIR ===== -->
+<!-- MODAL VOIR -->
 <div class="overlay" id="viewModal">
   <div class="modal">
     <div class="modal-title" id="vTitle"></div>
@@ -309,7 +280,7 @@
   </div>
 </div>
 
-<!-- ===== MODAL : RACCOURCIS ===== -->
+<!-- MODAL RACCOURCIS -->
 <div class="overlay" id="deviceModal">
   <div class="modal">
     <div class="modal-title">⚡ Ouvrir une IA</div>
@@ -327,7 +298,8 @@
         <a href="https://gemini.google.com" target="_blank" class="ai-link">🟡 Gemini</a>
         <a href="https://claude.ai" target="_blank" class="ai-link">🟣 Claude</a>
       </div>
-      
+    </div>
+
     <!-- PC Perso -->
     <div class="tab-panel" id="dp-perso">
       <div class="ai-grid">
@@ -335,13 +307,6 @@
         <a href="https://gemini.google.com" target="_blank" class="ai-link">🟡 Gemini</a>
         <a href="https://claude.ai" target="_blank" class="ai-link">🟣 Claude</a>
         <a href="https://www.perplexity.ai" target="_blank" class="ai-link">🔷 Perplexity</a>
-      </div>
-      <div class="custom-url-box">
-        <p>🔧 URL de votre LibreChat Perso :</p>
-        <input id="urlPerso" type="url" placeholder="https://librechat.votredomaine.com" oninput="saveURL('perso',this.value)">
-      </div>
-      <div id="lc-perso" style="display:none;margin-top:8px;">
-        <a id="a-perso" href="#" target="_blank" class="ai-link">🟢 LibreChat Perso</a>
       </div>
     </div>
 
@@ -361,36 +326,28 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================
-// ⚠️ REMPLACEZ CES 2 VALEURS PAR LES VÔTRES
-// ============================================
 const SUPABASE_URL = 'https://pfmrkspktkvxjkfulxcz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_RRoLaV-jPxUy_zppGXs-FQ_fMeojdp0';
 
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// État
 let conversations = [];
 let activeFilter = 'all';
 let searchTerm = '';
 let jsonImportData = null;
 
-// Démarrage
 window.addEventListener('DOMContentLoaded', () => {
     loadConvs();
-    loadSavedURLs();
     initDrop();
     document.querySelectorAll('.overlay').forEach(o => {
         o.addEventListener('click', e => { if (e.target === o) o.classList.remove('on'); });
     });
 });
 
-// ---- CHARGEMENT ----
 async function loadConvs() {
     const { data, error } = await db.from('conversations').select('*').order('created_at', { ascending: false });
     if (error) return toast('Erreur : ' + error.message, 'err');
@@ -399,7 +356,6 @@ async function loadConvs() {
     render();
 }
 
-// ---- STATS ----
 function updateStats() {
     document.getElementById('sTotal').textContent = conversations.length;
     document.getElementById('sLibreChat').textContent = conversations.filter(c => c.ai_source === 'LibreChat').length;
@@ -407,7 +363,6 @@ function updateStats() {
     document.getElementById('sChatGPT').textContent = conversations.filter(c => c.ai_source === 'ChatGPT').length;
 }
 
-// ---- RENDU ----
 function render() {
     let list = conversations;
     if (activeFilter !== 'all') list = list.filter(c => c.ai_source === activeFilter);
@@ -458,7 +413,6 @@ function hl(text, term) {
     return text.replace(new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<mark class="hl">$1</mark>');
 }
 
-// ---- RECHERCHE + FILTRE ----
 function doSearch() { searchTerm = document.getElementById('searchInput').value.trim(); render(); }
 function setFilter(f, btn) {
     activeFilter = f;
@@ -467,7 +421,6 @@ function setFilter(f, btn) {
     render();
 }
 
-// ---- AJOUTER ----
 async function saveNew() {
     const title = document.getElementById('aTitle').value.trim();
     const src = document.getElementById('aSource').value;
@@ -482,7 +435,6 @@ async function saveNew() {
     loadConvs();
 }
 
-// ---- VOIR ----
 function viewConv(id) {
     const c = conversations.find(x => x.id === id);
     if (!c) return;
@@ -497,7 +449,6 @@ function viewConv(id) {
     openModal('viewModal');
 }
 
-// ---- SUPPRIMER ----
 async function delConv(id) {
     if (!confirm('Supprimer cette conversation ?')) return;
     const { error } = await db.from('conversations').delete().eq('id', id);
@@ -506,7 +457,6 @@ async function delConv(id) {
     loadConvs();
 }
 
-// ---- IMPORT COLLER ----
 async function savePaste() {
     const title = document.getElementById('pTitle').value.trim();
     const src = document.getElementById('pSource').value;
@@ -521,7 +471,6 @@ async function savePaste() {
     loadConvs();
 }
 
-// ---- IMPORT JSON ----
 function initDrop() {
     const dz = document.getElementById('dropZone');
     dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
@@ -579,7 +528,6 @@ async function importJSON() {
     loadConvs();
 }
 
-// ---- RACCOURCIS APPAREILS ----
 function openDevice(dev) {
     document.querySelectorAll('[id^="dtab-"]').forEach(t => t.classList.remove('on'));
     document.querySelectorAll('[id^="dp-"]').forEach(p => p.classList.remove('on'));
@@ -593,24 +541,7 @@ function switchDevTab(dev, el) {
     el.classList.add('on');
     document.getElementById('dp-' + dev).classList.add('on');
 }
-function saveURL(dev, url) {
-    localStorage.setItem('lc_' + dev, url);
-    const linkDiv = document.getElementById('lc-' + dev);
-    const aEl = document.getElementById('a-' + dev);
-    if (url && linkDiv && aEl) { linkDiv.style.display = 'block'; aEl.href = url; }
-    else if (linkDiv) { linkDiv.style.display = 'none'; }
-}
-function loadSavedURLs() {
-    ['pro', 'perso'].forEach(dev => {
-        const url = localStorage.getItem('lc_' + dev) || '';
-        const key = dev === 'pro' ? 'urlPro' : 'urlPerso';
-        const inp = document.getElementById(key);
-        if (inp) inp.value = url;
-        if (url) saveURL(dev, url);
-    });
-}
 
-// ---- MODALS + TABS ----
 function openModal(id) { document.getElementById(id).classList.add('on'); }
 function closeModal(id) { document.getElementById(id).classList.remove('on'); }
 function switchTab(name, el) {
@@ -621,7 +552,6 @@ function switchTab(name, el) {
     document.getElementById('tp-' + name).classList.add('on');
 }
 
-// ---- TOAST ----
 let toastTimer;
 function toast(msg, type = 'info') {
     const el = document.getElementById('toast');

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Hub - Pierre Borella</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { opacity: 0.8; font-size: 14px; }
+        .search-bar { background: white; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .search-bar input { width: 100%; padding: 12px 16px; border: 2px solid #e1e4e8; border-radius: 8px; font-size: 16px; outline: none; }
+        .search-bar input:focus { border-color: #667eea; }
+        .filters { display: flex; gap: 8px; padding: 15px 20px; overflow-x: auto; background: white; border-top: 1px solid #e1e4e8; }
+        .filter-btn { padding: 6px 14px; border: 2px solid #e1e4e8; border-radius: 20px; background: white; cursor: pointer; font-size: 13px; white-space: nowrap; }
+        .filter-btn.active { background: #667eea; color: white; border-color: #667eea; }
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; }
+        .btn-add { width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; margin-bottom: 20px; }
+        .conversation-card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid #667eea; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+        .card-title { font-weight: 600; font-size: 16px; }
+        .card-source { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .source-librechat { background: #dcfce7; color: #16a34a; }
+        .source-copilot { background: #dbeafe; color: #2563eb; }
+        .source-gemini { background: #fef9c3; color: #ca8a04; }
+        .source-chatgpt { background: #fee2e2; color: #dc2626; }
+        .card-content { color: #666; font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
+        .card-date { color: #999; font-size: 12px; }
+        .card-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-view, .btn-delete { padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: none; }
+        .btn-view { background: #f3f4f6; color: #374151; }
+        .btn-delete { background: #fee2e2; color: #dc2626; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; }
+        .modal.active { display: flex; align-items: flex-end; }
+        @media (min-width: 600px) { .modal.active { align-items: center; justify-content: center; } }
+        .modal-content { background: white; border-radius: 16px 16px 0 0; padding: 24px; width: 100%; max-height: 90vh; overflow-y: auto; }
+        @media (min-width: 600px) { .modal-content { border-radius: 16px; max-width: 600px; } }
+        .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 6px; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 2px solid #e1e4e8; border-radius: 8px; font-size: 14px; outline: none; font-family: inherit; }
+        .form-group textarea { height: 150px; resize: vertical; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #667eea; }
+        .modal-buttons { display: flex; gap: 10px; }
+        .btn-save { flex: 1; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+        .btn-cancel { flex: 1; padding: 12px; background: #f3f4f6; color: #374151; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .empty-state .emoji { font-size: 48px; margin-bottom: 12px; }
+        .view-content { white-space: pre-wrap; line-height: 1.6; color: #374151; font-size: 14px; }
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        @media (min-width: 500px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+        .stat-card { background: white; border-radius: 10px; padding: 14px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stat-number { font-size: 24px; font-weight: 700; color: #667eea; }
+        .stat-label { font-size: 11px; color: #999; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🤖 AI Hub</h1>
+    <p>Toutes mes conversations IA en un seul endroit</p>
+</div>
+
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher dans toutes mes conversations..." oninput="filterConversations()">
+    <div class="filters">
+        <button class="filter-btn active" onclick="setFilter('all', this)">Toutes</button>
+        <button class="filter-btn" onclick="setFilter('LibreChat', this)">🟢 LibreChat</button>
+        <button class="filter-btn" onclick="setFilter('Copilot', this)">🔵 Copilot</button>
+        <button class="filter-btn" onclick="setFilter('Gemini', this)">🟡 Gemini</button>
+        <button class="filter-btn" onclick="setFilter('ChatGPT', this)">🟠 ChatGPT</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="stats">
+        <div class="stat-card"><div class="stat-number" id="totalCount">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card"><div class="stat-number" id="librechatCount">0</div><div class="stat-label">LibreChat</div></div>
+        <div class="stat-card"><div class="stat-number" id="geminiCount">0</div><div class="stat-label">Gemini</div></div>
+        <div class="stat-card"><div class="stat-number" id="chatgptCount">0</div><div class="stat-label">ChatGPT</div></div>
+    </div>
+    <button class="btn-add" onclick="openAddModal()">➕ Ajouter une conversation</button>
+    <div id="conversationsList"></div>
+</div>
+
+<div class="modal" id="addModal">
+    <div class="modal-content">
+        <div class="modal-title">📝 Nouvelle conversation</div>
+        <div class="form-group">
+            <label>Titre de la conversation *</label>
+            <input type="text" id="convTitle" placeholder="Ex: Analyse d'un contrat fournisseur">
+        </div>
+        <div class="form-group">
+            <label>Source IA *</label>
+            <select id="convSource">
+                <option value="LibreChat">🟢 LibreChat</option>
+                <option value="Copilot">🔵 Copilot</option>
+                <option value="Gemini">🟡 Gemini</option>
+                <option value="ChatGPT">🟠 ChatGPT</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Contenu de la conversation *</label>
+            <textarea id="convContent" placeholder="Collez ici le contenu de votre conversation..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Tags (optionnel)</label>
+            <input type="text" id="convTags" placeholder="Ex: contrat, juridique, fournisseur">
+        </div>
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="closeAddModal()">Annuler</button>
+            <button class="btn-save" onclick="saveConversation()">💾 Sauvegarder</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <div class="modal-title" id="viewTitle"></div>
+        <div style="margin-bottom: 15px;">
+            <span class="card-source" id="viewSource"></span>
+            <span style="color: #999; font-size: 12px; margin-left: 10px;" id="viewDate"></span>
+        </div>
+        <div class="view-content" id="viewContent"></div>
+        <br>
+        <button class="btn-cancel" style="width:100%" onclick="closeViewModal()">Fermer</button>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'VOTRE_URL_SUPABASE';
+    const SUPABASE_KEY = 'VOTRE_CLE_SUPABASE';
+
+    const { createClient } = supabase;
+    const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let allConversations = [];
+    let currentFilter = 'all';
+
+    window.onload = () => loadConversations();
+
+    async function loadConversations() {
+        const { data, error } = await db.from('conversations').select('*').order('created_at', { ascending: false });
+        if (error) { console.error('Erreur:', error); return; }
+        allConversations = data || [];
+        updateStats();
+        renderConversations(allConversations);
+    }
+
+    function updateStats() {
+        document.getElementById('totalCount').textContent = allConversations.length;
+        document.getElementById('librechatCount').textContent = allConversations.filter(c => c.ai_source === 'LibreChat').length;
+        document.getElementById('geminiCount').textContent = allConversations.filter(c => c.ai_source === 'Gemini').length;
+        document.getElementById('chatgptCount').textContent = allConversations.filter(c => c.ai_source === 'ChatGPT').length;
+    }
+
+    function renderConversations(conversations) {
+        const container = document.getElementById('conversationsList');
+        if (conversations.length === 0) {
+            container.innerHTML = '<div class="empty-state"><div class="emoji">💬</div><p>Aucune conversation trouvée</p><p style="margin-top:8px;font-size:13px">Ajoutez votre première conversation !</p></div>';
+            return;
+        }
+        container.innerHTML = conversations.map(conv => `
+            <div class="conversation-card">
+                <div class="card-header">
+                    <div class="card-title">${escapeHtml(conv.title)}</div>
+                    <span class="card-source source-${conv.ai_source.toLowerCase()}">${getEmoji(conv.ai_source)} ${conv.ai_source}</span>
+                </div>
+                <div class="card-content">${escapeHtml(conv.content.substring(0, 150))}${conv.content.length > 150 ? '...' : ''}</div>
+                ${conv.tags ? `<div style="margin-bottom:8px">${conv.tags.split(',').map(t => `<span style="background:#f3f4f6;padding:2px 8px;border-radius:10px;font-size:11px;margin-right:4px">${t.trim()}</span>`).join('')}</div>` : ''}
+                <div class="card-date">📅 ${formatDate(conv.created_at)}</div>
+                <div class="card-actions">
+                    <button class="btn-view" onclick="viewConversation('${conv.id}')">👁️ Voir</button>
+                    <button class="btn-delete" onclick="deleteConversation('${conv.id}')">🗑️ Supprimer</button>
+                </div>
+            </div>`).join('');
+    }
+
+    function filterConversations() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        let filtered = allConversations;
+        if (currentFilter !== 'all') filtered = filtered.filter(c => c.ai_source === currentFilter);
+        if (search) filtered = filtered.filter(c => c.title.toLowerCase().includes(search) || c.content.toLowerCase().includes(search) || (c.tags && c.tags.toLowerCase().includes(search)));
+        renderConversations(filtered);
+    }
+
+    function setFilter(filter, btn) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterConversations();
+    }
+
+    function openAddModal() { document.getElementById('addModal').classList.add('active'); }
+
+    function closeAddModal() {
+        document.getElementById('addModal').classList.remove('active');
+        document.getElementById('convTitle').value = '';
+        document.getElementById('convContent').value = '';
+        document.getElementById('convTags').value = '';
+    }
+
+    async function saveConversation() {
+        const title = document.getElementById('convTitle').value.trim();
+        const source = document.getElementById('convSource').value;
+        const content = document.getElementById('convContent').value.trim();
+        const tags = document.getElementById('convTags').value.trim();
+        if (!title || !content) { alert('Veuillez remplir le titre et le contenu !'); return; }
+        const { error } = await db.from('conversations').insert([{ title, ai_source: source, content, tags: tags || null }]);
+        if (error) { alert('Erreur : ' + error.message); return; }
+        closeAddModal();
+        loadConversations();
+    }
+
+    function viewConversation(id) {
+        const conv = allConversations.find(c => c.id === id);
+        if (!conv) return;
+        document.getElementById('viewTitle').textContent = conv.title;
+        document.getElementById('viewSource').textContent = getEmoji(conv.ai_source) + ' ' + conv.ai_source;
+        document.getElementById('viewSource').className = 'card-source source-' + conv.ai_source.toLowerCase();
+        document.getElementById('viewDate').textContent = formatDate(conv.created_at);
+        document.getElementById('viewContent').textContent = conv.content;
+        document.getElementById('viewModal').classList.add('active');
+    }
+
+    function closeViewModal() { document.getElementById('viewModal').classList.remove('active'); }
+
+    async function deleteConversation(id) {
+        if (!confirm('Supprimer cette conversation ?')) return;
+        const { error } = await db.from('conversations').delete().eq('id', id);
+        if (error) { alert('Erreur lors de la suppression'); return; }
+        loadConversations();
+    }
+
+    function getEmoji(source) {
+        return { LibreChat: '🟢', Copilot: '🔵', Gemini: '🟡', ChatGPT: '🟠' }[source] || '🤖';
+    }
+
+    function formatDate(dateStr) {
+        return new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+    }
+</script>
+</body>
+</html>
